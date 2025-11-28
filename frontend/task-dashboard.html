@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task Priority – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="task-dashboard.css" />
+</head>
+<body>
+  <header class="top-bar">
+    <div class="brand">
+      <span class="brand-main">Task Priority</span>
+      <span class="brand-sub">Smart task prioritization made simple</span>
+    </div>
+    <button class="btn-outline" id="signout-btn">
+      <span class="icon-exit">⟲</span>
+      Sign Out
+    </button>
+  </header>
+
+  <main class="main-wrapper">
+    <div class="tabs">
+      <button class="tab active" id="tab-add">Add Task</button>
+      <button class="tab" id="tab-bulk">Bulk Import</button>
+    </div>
+
+    <section class="layout">
+      <!-- LEFT: ADD / BULK -->
+      <div class="card left">
+        <!-- Add Task panel -->
+        <div id="panel-add" class="panel visible">
+          <h2>Add New Task</h2>
+
+          <div class="field-group">
+            <label for="title">Task Title</label>
+            <input
+              type="text"
+              id="title"
+              placeholder="e.g., Fix login bug"
+            />
+          </div>
+
+          <div class="grid-3">
+            <div class="field-group">
+              <label for="due_date">Due Date</label>
+              <input
+                type="date"
+                id="due_date"
+                placeholder="dd-mm-yyyy"
+              />
+            </div>
+            <div class="field-group">
+              <label for="estimated_hours">Estimated Hours</label>
+              <input
+                type="number"
+                id="estimated_hours"
+                min="0"
+                step="0.25"
+                value="1"
+              />
+            </div>
+            <div class="field-group">
+              <label for="importance">Importance (1-10)</label>
+              <input
+                type="number"
+                id="importance"
+                min="1"
+                max="10"
+                value="5"
+              />
+            </div>
+          </div>
+
+          <div class="field-group with-button">
+            <div class="field-full">
+              <label for="dependencies">Dependencies (task titles)</label>
+              <input
+                type="text"
+                id="dependencies"
+                placeholder="Enter task title this depends on"
+              />
+            </div>
+            <button class="btn-square" id="add-dep-btn">+</button>
+          </div>
+
+          <div class="chips" id="deps-chips"></div>
+
+          <div class="error" id="input-error"></div>
+
+          <button class="btn-primary full" id="add-task-btn">
+            Add Task
+          </button>
+        </div>
+
+        <!-- Bulk Import panel -->
+        <div id="panel-bulk" class="panel">
+          <h2>Bulk Import Tasks</h2>
+          <p class="muted">
+            Paste a JSON array of tasks. Each task can include
+            <code>title</code>, <code>due_date</code>, <code>estimated_hours</code>,
+            <code>importance</code>, and <code>dependencies</code>.
+          </p>
+          <textarea
+            id="json-input"
+            rows="10"
+            placeholder='[{"title": "Fix login bug", "due_date": "2025-11-30", "estimated_hours": 3, "importance": 8, "dependencies": []}]'
+          ></textarea>
+          <div class="error" id="json-error"></div>
+          <button class="btn-primary full" id="load-json-btn">
+            Import Tasks
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: STRATEGY / INFO -->
+      <div class="right-column">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">
+                ⚖️ Priority Strategy
+              </h2>
+              <p class="card-subtitle">
+                Balanced approach – consider all factors equally
+              </p>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="strategy">Strategy</label>
+            <select id="strategy">
+              <option value="smart_balance">Smart Balance</option>
+              <option value="fastest_wins">Fastest Wins</option>
+              <option value="high_impact">High Impact</option>
+              <option value="deadline_driven">Deadline Driven</option>
+            </select>
+          </div>
+
+          <button class="btn-primary full" id="analyze-btn">
+            Analyze Tasks
+          </button>
+
+          <div class="status" id="status-msg"></div>
+        </div>
+
+        <div class="card">
+          <h3>How it works</h3>
+          <ul class="how-list">
+            <li>Add tasks individually or import via JSON.</li>
+            <li>Select your prioritization strategy.</li>
+            <li>Click Analyze to get sorted results.</li>
+            <li>Each task gets a priority score and explanation.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Optional: show draft list and results below, reused from previous page -->
+    <section class="results-section">
+      <div class="card">
+        <h3>Current Draft Tasks</h3>
+        <div class="tasks-list" id="draft-tasks"></div>
+      </div>
+
+      <div class="card">
+        <h3>Top 3 for Today</h3>
+        <div class="tasks-list" id="top3"></div>
+      </div>
+
+      <div class="card">
+        <h3>All Tasks (Sorted)</h3>
+        <div class="tasks-list" id="all-results"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="task-dashboard.js"></script>
+</body>
+</html>

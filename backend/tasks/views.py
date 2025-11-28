@@ -1,12 +1,82 @@
 from datetime import date
 from collections import defaultdict, deque
 
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import TaskInputSerializer, TaskOutputSerializer
+import json
 
+
+# ===================== SIMPLE AUTH VIEWS =====================
+
+@csrf_exempt
+def signup_view(request):
+    """
+    Very simple email+password signup for your frontend demo.
+    Expects JSON: { "email": "...", "password": "..." }
+    """
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid JSON"}, status=400)
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return JsonResponse({"detail": "Email and password required"}, status=400)
+
+    if len(password) < 6:
+        return JsonResponse(
+            {"detail": "Password must be at least 6 characters"}, status=400
+        )
+
+    if User.objects.filter(username=email).exists():
+        return JsonResponse({"detail": "User already exists"}, status=400)
+
+    User.objects.create_user(username=email, email=email, password=password)
+    return JsonResponse({"detail": "User created"}, status=201)
+
+
+@csrf_exempt
+def login_view(request):
+    """
+    Very simple login.
+    Expects JSON: { "email": "...", "password": "..." }
+    """
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid JSON"}, status=400)
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return JsonResponse({"detail": "Email and password required"}, status=400)
+
+    user = authenticate(username=email, password=password)
+    if user is None:
+        return JsonResponse({"detail": "Invalid credentials"}, status=400)
+
+    # For now just return success; you can add JWT or session later.
+    return JsonResponse({"detail": "Login success"}, status=200)
+
+
+# ===================== TASK PRIORITY LOGIC (your original code) =====================
 
 def detect_cycles(tasks_dict):
     indegree = defaultdict(int)
