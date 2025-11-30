@@ -1,96 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Task Priority</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="index.css" />
+  <meta charset="UTF-8" />
+  <title>Task Priority - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="index.css" /> 
 </head>
 <body>
 
-  <!-- AUTH SCREEN -->
-  <div id="auth-screen" class="auth-wrapper">
-    <div class="auth-card">
-      <h1 class="auth-title">Task Priority</h1>
-      <p class="auth-subtitle">Smart task prioritization made simple</p>
+  <div id="auth-screen" class="auth-wrapper">
+    <div class="auth-card">
+      <h1 class="auth-title">Task Priority</h1>
+      <p class="auth-subtitle">Smart task prioritization made simple</p>
 
-      <div class="auth-tabs">
-        <div id="tab-signin" class="auth-tab active">Sign In</div>
-        <div id="tab-signup" class="auth-tab">Sign Up</div>
-      </div>
+      <div class="auth-tabs">
+        <div id="tab-signin" class="auth-tab active">Sign In</div>
+        <div id="tab-signup" class="auth-tab">Sign Up</div>
+      </div>
 
-      <label class="auth-label">Email</label>
-      <input class="auth-input" type="email" placeholder="you@example.com" />
+      <div id="name-field" style="display: none;">
+        <label class="auth-label">Full Name</label>
+        <input id="auth-name" class="auth-input" type="text" placeholder="John Doe" />
+      </div>
 
-      <label class="auth-label">Password</label>
-      <input class="auth-input" type="password" placeholder="********" />
-      <div class="auth-helper">Password must be at least 6 characters</div>
+      <label class="auth-label">Email</label>
+      <input id="auth-email" class="auth-input" type="email" placeholder="you@example.com" />
 
-      <button id="auth-btn" class="auth-btn">Sign In</button>
-    </div>
-  </div>
+      <label class="auth-label">Password</label>
+      <input id="auth-password" class="auth-input" type="password" placeholder="********" />
+      <div class="auth-helper">Password must be at least 6 characters</div>
 
-  <!-- MAIN APP -->
-  <div id="app-screen" class="app-hidden" style="width:100%;">
-    <header>
-      <h1>Smart Task Analyser</h1>
-    </header>
-    <div class="app-container">
-      <section class="panel">
-        <h2>Input Tasks</h2>
-        <div id="input-form">
-          <label>Title
-            <input type="text" id="title" placeholder="Fix login bug" />
-          </label>
-          <label>Due Date
-            <input type="date" id="due_date" />
-          </label>
-          <label>Estimated Hours
-            <input type="number" id="estimated_hours" min="0" step="0.25" />
-          </label>
-          <label>Importance (1-10)
-            <input type="number" id="importance" min="1" max="10" value="5" />
-          </label>
-          <label>Dependencies (comma-separated IDs of existing tasks)
-            <input type="text" id="dependencies" placeholder="task_0, task_2" />
-          </label>
-          <button id="add-task-btn">Add Task</button>
-          <div class="error" id="input-error"></div>
-        </div>
+      <div id="auth-message" class="auth-message"></div>
 
-        <h3 style="margin-top:1rem;">Bulk JSON Input</h3>
-        <label>Paste JSON array of tasks
-          <textarea id="json-input" placeholder='[{"title": "Fix login bug", "due_date": "2025-11-30", "estimated_hours": 3, "importance": 8, "dependencies": []}]'></textarea>
-        </label>
-        <button id="load-json-btn">Load JSON Tasks</button>
-        <div class="error" id="json-error"></div>
+      <button id="auth-btn" class="auth-btn">Sign In</button>
+    </div>
+  </div>
 
-        <h3 style="margin-top:1rem;">Current Draft Tasks</h3>
-        <div class="tasks-list" id="draft-tasks"></div>
-      </section>
-
-      <section class="panel">
-        <h2>Analyse & Results</h2>
-        <label>Strategy
-          <select id="strategy">
-            <option value="smart_balance">Smart Balance</option>
-            <option value="fastest_wins">Fastest Wins</option>
-            <option value="high_impact">High Impact</option>
-            <option value="deadline_driven">Deadline Driven</option>
-          </select>
-        </label>
-        <button id="analyze-btn">Analyze Tasks</button>
-        <div class="status" id="status-msg"></div>
-
-        <h3 style="margin-top:1rem;">Top 3 for Today</h3>
-        <div class="tasks-list" id="top3"></div>
-
-        <h3 style="margin-top:1rem;">All Tasks (Sorted)</h3>
-        <div class="tasks-list" id="all-results"></div>
-      </section>
-    </div>
-  </div>
-
-  <script src="index.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>

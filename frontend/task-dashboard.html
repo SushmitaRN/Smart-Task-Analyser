@@ -12,117 +12,128 @@
       <span class="brand-main">Task Priority</span>
       <span class="brand-sub">Smart task prioritization made simple</span>
     </div>
-    <button class="btn-outline" id="signout-btn">
-      <span class="icon-exit">⟲</span>
-      Sign Out
-    </button>
+    <div class="header-right">
+      <div class="profile-section">
+        <button class="profile-btn" id="profile-btn">
+          <div class="profile-avatar" id="profile-avatar">JD</div>
+        </button>
+        
+        <div class="profile-menu" id="profile-menu" style="display: none;">
+          <div class="profile-header">
+            <div class="profile-avatar-large" id="profile-avatar-large">JD</div>
+            <div class="profile-info">
+              <p class="profile-fullname" id="profile-fullname">John Doe</p>
+              <p class="profile-email" id="profile-email">john@example.com</p>
+            </div>
+          </div>
+          <div class="profile-divider"></div>
+          <button class="profile-menu-item logout" id="profile-signout">
+            <span>🚪</span> Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main class="main-wrapper">
     <div class="tabs">
-      <button class="tab active" id="tab-add">Add Task</button>
-      <button class="tab" id="tab-bulk">Bulk Import</button>
+      <button class="tab active" id="tab-add" data-tab="add">Add Task</button>
+      <button class="tab" id="tab-tasks" data-tab="tasks">Tasks</button>
+      <button class="tab" id="tab-graph" data-tab="graph">Graph</button>
+      <button class="tab" id="tab-bulk" data-tab="bulk">Bulk Import</button>
     </div>
 
     <section class="layout">
-      <!-- LEFT: ADD / BULK -->
       <div class="card left">
         <!-- Add Task panel -->
         <div id="panel-add" class="panel visible">
           <h2>Add New Task</h2>
-
-          <div class="field-group">
-            <label for="title">Task Title</label>
-            <input
-              type="text"
-              id="title"
-              placeholder="e.g., Fix login bug"
-            />
-          </div>
-
-          <div class="grid-3">
+          <form id="taskForm">
             <div class="field-group">
-              <label for="due_date">Due Date</label>
-              <input
-                type="date"
-                id="due_date"
-                placeholder="dd-mm-yyyy"
-              />
+              <label for="title">Task Title</label>
+              <input type="text" id="title" placeholder="e.g., Fix login bug" />
             </div>
-            <div class="field-group">
-              <label for="estimated_hours">Estimated Hours</label>
-              <input
-                type="number"
-                id="estimated_hours"
-                min="0"
-                step="0.25"
-                value="1"
-              />
+
+            <div class="grid-3">
+              <div class="field-group">
+                <label for="dueDate">Due Date</label>
+                <input type="date" id="dueDate" />
+              </div>
+              <div class="field-group">
+                <label for="hours">Estimated Hours</label>
+                <input type="number" id="hours" min="0" step="0.25" value="1" />
+              </div>
+              <div class="field-group">
+                <label for="importance">Importance (1-10)</label>
+                <input type="number" id="importance" min="1" max="10" value="5" />
+              </div>
             </div>
-            <div class="field-group">
-              <label for="importance">Importance (1-10)</label>
-              <input
-                type="number"
-                id="importance"
-                min="1"
-                max="10"
-                value="5"
-              />
+
+            <div class="field-group with-button">
+              <div class="field-full">
+                <label for="dependencies">Dependencies (task titles)</label>
+                <input type="text" id="dependencies" placeholder="Enter task title this depends on" list="taskSuggestions" />
+                <datalist id="taskSuggestions"></datalist>
+              </div>
+              <button type="button" class="btn-square" id="add-dep-btn">+</button>
             </div>
+
+            <div class="chips" id="deps-chips"></div>
+            <div class="error" id="input-error"></div>
+            <button type="submit" class="btn-primary full" id="add-task-btn">Add Task</button>
+          </form>
+        </div>
+
+        <!-- Tasks list panel -->
+        <div id="panel-tasks" class="panel" style="display:none;">
+          <h2>Tasks</h2>
+          <ul id="taskList" class="task-list"></ul>
+        </div>
+
+        <!-- Graph panel -->
+        <div id="panel-graph" class="panel" style="display:none;">
+          <h2>📊 Dependency Graph</h2>
+          <p style="color:#666; margin-bottom:15px;">Visualize task dependencies and identify circular dependencies.</p>
+          <div id="graphContainer" style="border:1px solid #ddd; border-radius:5px; padding:20px; background:#f9f9f9; min-height:400px; position:relative;">
+            <canvas id="dependencyCanvas" width="800" height="400"></canvas>
+            <div id="graphMessage" style="text-align:center; color:#999; padding:20px;">Add tasks with dependencies to visualize the graph</div>
           </div>
-
-          <div class="field-group with-button">
-            <div class="field-full">
-              <label for="dependencies">Dependencies (task titles)</label>
-              <input
-                type="text"
-                id="dependencies"
-                placeholder="Enter task title this depends on"
-              />
-            </div>
-            <button class="btn-square" id="add-dep-btn">+</button>
+          <div id="circularDepsAlert" style="margin-top:15px; padding:12px; background:#fff3cd; color:#856404; border:1px solid #ffeaa7; border-radius:5px; display:none;">
+            <strong>⚠️ Circular Dependencies Detected:</strong> <span id="circularDepsList"></span>
           </div>
-
-          <div class="chips" id="deps-chips"></div>
-
-          <div class="error" id="input-error"></div>
-
-          <button class="btn-primary full" id="add-task-btn">
-            Add Task
-          </button>
         </div>
 
         <!-- Bulk Import panel -->
-        <div id="panel-bulk" class="panel">
+        <div id="panel-bulk" class="panel" style="display:none;">
           <h2>Bulk Import Tasks</h2>
-          <p class="muted">
-            Paste a JSON array of tasks. Each task can include
-            <code>title</code>, <code>due_date</code>, <code>estimated_hours</code>,
-            <code>importance</code>, and <code>dependencies</code>.
-          </p>
-          <textarea
-            id="json-input"
-            rows="10"
-            placeholder='[{"title": "Fix login bug", "due_date": "2025-11-30", "estimated_hours": 3, "importance": 8, "dependencies": []}]'
-          ></textarea>
+          <p class="muted">Paste a JSON array of tasks or upload a file.</p>
+          
+          <div style="display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee;">
+            <button type="button" class="import-tab active" data-method="paste" style="padding:10px 15px; border:none; background:none; cursor:pointer; border-bottom:3px solid #007bff; color:#007bff; font-weight:bold;">Paste JSON</button>
+            <button type="button" class="import-tab" data-method="file" style="padding:10px 15px; border:none; background:none; cursor:pointer; color:#999; font-weight:bold;">Upload File</button>
+          </div>
+          
+          <div id="paste-section" class="import-method">
+            <textarea id="json-input" rows="10" placeholder='[{"title": "Fix login bug", "due_date": "2025-11-30", "estimated_hours": 3, "importance": 8, "dependencies": []}]'></textarea>
+            <button type="button" class="btn-primary full" id="load-json-btn" style="margin-top:12px;">Import Tasks</button>
+          </div>
+          
+          <div id="file-section" class="import-method" style="display:none;">
+            <input type="file" id="json-file" accept="application/json" style="display:none;" />
+            <button type="button" id="file-upload-btn" class="btn-primary full">Choose File</button>
+          </div>
+          
+          <div class="success" id="json-success"></div>
           <div class="error" id="json-error"></div>
-          <button class="btn-primary full" id="load-json-btn">
-            Import Tasks
-          </button>
         </div>
       </div>
-
-      <!-- RIGHT: STRATEGY / INFO -->
+      
       <div class="right-column">
         <div class="card">
           <div class="card-header">
             <div>
-              <h2 class="card-title">
-                ⚖️ Priority Strategy
-              </h2>
-              <p class="card-subtitle">
-                Balanced approach – consider all factors equally
-              </p>
+              <h2 class="card-title">⚖️ Priority Strategy</h2>
+              <p class="card-subtitle">Balanced approach – consider all factors equally</p>
             </div>
           </div>
 
@@ -136,10 +147,7 @@
             </select>
           </div>
 
-          <button class="btn-primary full" id="analyze-btn">
-            Analyze Tasks
-          </button>
-
+          <button class="btn-primary full" id="analyze-btn">Analyze Tasks</button>
           <div class="status" id="status-msg"></div>
         </div>
 
@@ -154,25 +162,30 @@
         </div>
       </div>
     </section>
-
-    <!-- Optional: show draft list and results below, reused from previous page -->
-    <section class="results-section">
-      <div class="card">
-        <h3>Current Draft Tasks</h3>
-        <div class="tasks-list" id="draft-tasks"></div>
-      </div>
-
-      <div class="card">
-        <h3>Top 3 for Today</h3>
-        <div class="tasks-list" id="top3"></div>
-      </div>
-
-      <div class="card">
-        <h3>All Tasks (Sorted)</h3>
-        <div class="tasks-list" id="all-results"></div>
-      </div>
-    </section>
   </main>
+
+  <!-- Results Modal -->
+  <div id="resultsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+    <div style="background:white; margin:20px auto; padding:30px; max-width:800px; border-radius:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="margin:0;">Priority Results (Sorted)</h2>
+        <button id="closeModal" style="background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
+      </div>
+      <div id="resultsContainer" style="max-height:600px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001; justify-content:center; align-items:center;">
+    <div style="background:white; padding:30px; border-radius:8px; max-width:400px; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+      <h3 style="margin-top:0; margin-bottom:15px; color:#333;">Confirm Sign Out</h3>
+      <p style="color:#666; margin-bottom:20px;">Are you sure you want to sign out? Your tasks will be saved and you can continue later.</p>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button id="confirmCancel" style="padding:10px 20px; border:1px solid #ddd; background:#f5f5f5; border-radius:5px; cursor:pointer; font-weight:bold;">Cancel</button>
+        <button id="confirmYes" style="padding:10px 20px; background:#ff6b6b; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">Sign Out</button>
+      </div>
+    </div>
+  </div>
 
   <script src="task-dashboard.js"></script>
 </body>
